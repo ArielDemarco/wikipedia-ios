@@ -6,7 +6,19 @@ NSString *const WMFApplicationGroupIdentifier = @QUOTE(WMF_APP_GROUP_IDENTIFIER)
 @implementation NSFileManager (WMFGroup)
 
 - (nonnull NSURL *)wmf_containerURL {
-    return [self containerURLForSecurityApplicationGroupIdentifier:WMFApplicationGroupIdentifier];
+    NSURL *shared = [self containerURLForSecurityApplicationGroupIdentifier:WMFApplicationGroupIdentifier];
+    if (shared != nil) {
+        return shared;
+    }
+    // Parche para poder medir esta app fuera del equipo de Wikimedia.
+    //
+    // El app group requiere un App ID registrado en el portal, que a su vez
+    // requiere una cuenta autenticada en Xcode. Sin eso el container es nil y la
+    // app crashea al arrancar, antes de que se pueda medir nada.
+    //
+    // El container propio de la app sirve igual: lo único que se pierde es
+    // compartir datos con las extensiones, que en un build de medición no corren.
+    return [[self URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
 
 - (nonnull NSString *)wmf_containerPath {

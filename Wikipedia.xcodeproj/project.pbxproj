@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA11BB22CC33DD44EE550003 /* MemoryInsight in Frameworks */ = {isa = PBXBuildFile; productRef = AA11BB22CC33DD44EE550002 /* MemoryInsight */; };
+		AA11BB22CC33DD44EE550005 /* MemoryInsightProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE550004 /* MemoryInsightProbe.swift */; };
 		00021DE324D48EFD00476F97 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00021DE224D48EFD00476F97 /* WidgetKit.framework */; };
 		00021DE524D48EFD00476F97 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00021DE424D48EFD00476F97 /* SwiftUI.framework */; };
 		00021DE824D48EFD00476F97 /* Widgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00021DE724D48EFD00476F97 /* Widgets.swift */; };
@@ -2909,6 +2911,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AA11BB22CC33DD44EE550004 /* MemoryInsightProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryInsightProbe.swift; sourceTree = "<group>"; };
 		00021DE124D48EFD00476F97 /* WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		00021DE224D48EFD00476F97 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		00021DE424D48EFD00476F97 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -4452,6 +4455,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA11BB22CC33DD44EE550003 /* MemoryInsight in Frameworks */,
 				D844D9731D6CB2600042D692 /* WMF.framework in Frameworks */,
 				83AF34F724D3341E000046D6 /* BackgroundTasks.framework in Frameworks */,
 				D8D553621DF1B63200B90177 /* QuartzCore.framework in Frameworks */,
@@ -6733,6 +6737,7 @@
 				BC45D57D1C32F3EA007C72F3 /* Diagnostics */,
 				BC45D5461C31E0C0007C72F3 /* App View Controller */,
 				67BF28532C3DEC5300C9F5DE /* AppDelegate.swift */,
+				AA11BB22CC33DD44EE550004 /* MemoryInsightProbe.swift */,
 				67BF28572C3DECA500C9F5DE /* SceneDelegate.swift */,
 				0EBCA7411C162ECF004F1FD9 /* MWKTitleLanguageController.m */,
 				0EBCA7421C162ECF004F1FD9 /* MWKTitleLanguageController.h */,
@@ -8418,6 +8423,7 @@
 			);
 			name = Wikipedia;
 			packageProductDependencies = (
+				AA11BB22CC33DD44EE550002 /* MemoryInsight */,
 				679B89EC2E7DFC8B009902BE /* HCaptcha */,
 			);
 			productName = "Wikipedia-iOS";
@@ -8785,6 +8791,7 @@
 			);
 			mainGroup = D499142C181D51DE00E6073C;
 			packageReferences = (
+				AA11BB22CC33DD44EE550001 /* XCLocalSwiftPackageReference "../.." */,
 				67A770C6251BFE0400F94EF9 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
 				679B89EB2E7DFC8B009902BE /* XCRemoteSwiftPackageReference "HCaptcha-ios-sdk" */,
 			);
@@ -9504,6 +9511,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA11BB22CC33DD44EE550005 /* MemoryInsightProbe.swift in Sources */,
 				8361474B24223689003E49D3 /* ArticleViewController+Announcements.swift in Sources */,
 				66BD84765EB14C81A40BD5F2 /* ArticleViewController+DonationReminder.swift in Sources */,
 				B0524B29214854E900D8FD8D /* DescriptionWelcomePanelViewController.swift in Sources */,
@@ -16031,6 +16039,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		AA11BB22CC33DD44EE550001 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		679B89EB2E7DFC8B009902BE /* XCRemoteSwiftPackageReference "HCaptcha-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -16051,6 +16066,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AA11BB22CC33DD44EE550002 /* MemoryInsight */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA11BB22CC33DD44EE550001 /* XCLocalSwiftPackageReference "../.." */;
+			productName = MemoryInsight;
+		};
 		674DF84B2E84250900F58603 /* HCaptcha */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 679B89EB2E7DFC8B009902BE /* XCRemoteSwiftPackageReference "HCaptcha-ios-sdk" */;

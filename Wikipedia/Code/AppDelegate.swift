@@ -1,4 +1,5 @@
 import UIKit
+import MemoryInsight
 import WMFData
 import BackgroundTasks
 import CocoaLumberjackSwift
@@ -25,7 +26,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let appViewController = WMFAppViewController()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+
+        // MemoryInsight: única integración en toda la app. Así es como lo usaría
+        // un cliente -- una llamada, sin hooks ni inicialización especial.
+        MemoryInsightProbe.scheduleReport(after: 25)
+
         registerUserDefaults()
         
 #if DEBUG
