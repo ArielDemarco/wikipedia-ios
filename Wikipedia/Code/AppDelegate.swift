@@ -27,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        // MemoryInsight: única integración en toda la app. Así es como lo usaría
-        // un cliente -- una llamada, sin hooks ni inicialización especial.
+        // MemoryInsight: the only integration in the whole app. This is how a
+        // client would use it -- one call, no hooks, no special setup.
         MemoryInsightProbe.scheduleReport(after: 25)
 
         registerUserDefaults()

@@ -16,8 +16,8 @@ NSString *const WMFApplicationGroupIdentifier = @QUOTE(WMF_APP_GROUP_IDENTIFIER)
     // requiere una cuenta autenticada en Xcode. Sin eso el container es nil y la
     // app crashea al arrancar, antes de que se pueda medir nada.
     //
-    // El container propio de la app sirve igual: lo único que se pierde es
-    // compartir datos con las extensiones, que en un build de medición no corren.
+    // The app's own container works just as well: the only thing lost is
+    // sharing data with the extensions, which do not run in a measurement build.
     return [[self URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
 

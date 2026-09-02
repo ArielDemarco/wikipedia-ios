@@ -1,32 +1,32 @@
 import Foundation
 import MemoryInsight
 
-/// Reporte de memoria de la app anfitriona.
+/// Memory report for the host app.
 ///
-/// Único archivo agregado a Wikipedia además de una línea en AppDelegate. Es
-/// deliberadamente así: el SDK es una API, y la integración de un cliente
-/// debería ser una llamada, no una ceremonia.
+/// The only file added to Wikipedia besides one line in AppDelegate. That is
+/// deliberate: the SDK is an API, and a client's integration should be a call,
+/// not a ceremony.
 enum MemoryInsightProbe {
 
-    /// Espera a que la app levante la UI y cargue contenido antes de medir:
-    /// capturar en el arranque daría un proceso a medio construir.
-    /// Un reporter por prioridad: la pregunta es si el QoS de la cola cambia
-    /// cuánto tiempo se sostienen los locks, que es lo que frena a la app.
+    /// One reporter per priority: the question is whether the queue's QoS
+    /// changes how long the locks are held, which is what stalls the app.
     private static let reporters: [(String, MemoryReporter)] = [
         ("utility", MemoryReporter(qos: .utility)),
         ("userInitiated", MemoryReporter(qos: .userInitiated))
     ]
 
+    /// Waits for the app to bring up its UI and load content before measuring:
+    /// capturing at launch would sample a half-built process.
     static func scheduleReport(after seconds: TimeInterval) {
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
             Task { await compareQoS() }
         }
     }
 
-    /// Varias muestras por prioridad. La primera de cada una paga el
-    /// relevamiento inicial, así que se descarta.
+    /// Several samples per priority. The first of each pays for the initial
+    /// survey, so it is discarded.
     private static func compareQoS() async {
-        var out = "\n████ MemoryInsight · costo por prioridad de cola ████\n"
+        var out = "\n████ MemoryInsight · cost by queue priority ████\n"
         for (name, reporter) in reporters {
             var locked: [Double] = []
             var total: [Double] = []
@@ -38,12 +38,12 @@ enum MemoryInsightProbe {
             }
             guard !locked.isEmpty else { continue }
             let ls = locked.sorted(), ts = total.sorted()
-            out += String(format: "  %-14@ lockeado: mediana %.1f ms · min %.1f · max %.1f",
+            out += String(format: "  %-14@ locked: median %.1f ms · min %.1f · max %.1f",
                           name as NSString, ls[ls.count / 2], ls[0], ls[ls.count - 1])
-            out += String(format: "   │ total mediana %.1f ms  (%d muestras)\n",
+            out += String(format: "   │ total median %.1f ms  (%d samples)\n",
                           ts[ts.count / 2], ls.count)
         }
-        emit(out + "████ FIN ████\n")
+        emit(out + "████ END ████\n")
 
         if let dump = await reporters[1].1.capture() {
             emit(buildReport(dump))
@@ -52,36 +52,36 @@ enum MemoryInsightProbe {
 
     private static func buildReport(_ dump: MemoryDump?) -> String {
         var out = "\n████ MemoryInsight · \(ProcessInfo.processInfo.processName) ████\n"
-        guard let dump else { return out + "✗ no se pudo capturar\n" }
+        guard let dump else { return out + "✗ capture failed\n" }
 
         out += "  device \(dump.device.model) · \(dump.device.systemVersion)\n"
         out += "  footprint \(dump.footprint.physFootprintBytes.mi_reportBytes)\n"
 
-        out += "\nPor origen (propio, sin lo compartido)\n"
+        out += "\nBy origin (private, excluding shared)\n"
         for b in dump.regions.byOrigin.prefix(10) where b.bytes > 0 {
             out += "  " + mi_pad(b.name, 32) + b.bytes.mi_reportBytes + "\n"
         }
 
         if let heap = dump.heap {
-            out += "\nPor tipo\n"
+            out += "\nBy type\n"
             for b in heap.byType.prefix(10) {
                 out += "  " + mi_pad(String(b.name.prefix(40)), 42)
                      + "\(b.count) · \(b.bytes.mi_reportBytes)\n"
             }
-            out += "\n══ Veredicto ══\n"
+            out += "\n══ Verdict ══\n"
             let share = Double(heap.totalBytes) / Double(max(dump.footprint.physFootprintBytes, 1))
             out += String(format: "  heap / footprint   : %5.1f%%\n", share * 100)
-            out += String(format: "  con nombre de tipo : %5.1f%% del heap\n",
+            out += String(format: "  named with a type  : %5.1f%% of the heap\n",
                           heap.classifiedRatio * 100)
         }
-        out += String(format: "  costo: mapa %.2f ms · censo %.2f ms · lockeado %.2f ms\n",
+        out += String(format: "  cost: map %.2f ms · census %.2f ms · locked %.2f ms\n",
                       dump.cost.regionsMillis, dump.cost.censusMillis ?? 0,
                       dump.cost.censusLockedMillis ?? 0)
         if let json = try? dump.jsonData() { out += "  payload: \(json.count) bytes\n" }
-        return out + "████ FIN ████\n"
+        return out + "████ END ████\n"
     }
 
-    /// stderr sin buffer: en un device el stdout se pierde con facilidad.
+    /// Unbuffered stderr: on a device stdout is easily lost.
     private static func emit(_ text: String) {
         FileHandle.standardError.write(Data(text.utf8))
         print(text)
