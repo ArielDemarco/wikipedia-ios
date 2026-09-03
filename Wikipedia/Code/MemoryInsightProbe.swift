@@ -30,9 +30,10 @@ enum MemoryInsightProbe {
     /// but "what grew, and where did it come from". A map view is the sharpest
     /// example available in this app -- tiles are graphics memory, so the heap
     /// census should stay flat while the region map moves.
-    private static func trackWhileBrowsing(samples: Int = 12,
-                                           every seconds: TimeInterval = 10) async {
+    private static func trackWhileBrowsing(samples: Int = 30,
+                                           every seconds: TimeInterval = 5) async {
         let reporter = reporters[1].1      // .userInitiated: the cheaper QoS
+        emit("[baseline start]")
         guard let baseline = await reporter.capture() else {
             emit("\n✗ baseline capture failed\n")
             return
@@ -41,7 +42,12 @@ enum MemoryInsightProbe {
 
         for step in 1...samples {
             try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-            guard let now = await reporter.capture() else { continue }
+            emit("[capture \(step) start]")
+            guard let now = await reporter.capture() else {
+                emit("[capture \(step) returned nil]")
+                continue
+            }
+            emit("[capture \(step) ok]")
 
             var out = header("t+\(Int(Double(step) * seconds))s", now)
             if let diff = try? MemoryDumpDiff.between(baseline, now) {
