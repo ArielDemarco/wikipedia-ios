@@ -19,8 +19,51 @@ enum MemoryInsightProbe {
     /// capturing at launch would sample a half-built process.
     static func scheduleReport(after seconds: TimeInterval) {
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-            Task { await compareQoS() }
+            Task { await trackWhileBrowsing() }
         }
+    }
+
+    /// Takes a baseline and then keeps diffing against it while someone uses
+    /// the app.
+    ///
+    /// This is the case the whole project is for: not "how much memory is there"
+    /// but "what grew, and where did it come from". A map view is the sharpest
+    /// example available in this app -- tiles are graphics memory, so the heap
+    /// census should stay flat while the region map moves.
+    private static func trackWhileBrowsing(samples: Int = 12,
+                                           every seconds: TimeInterval = 10) async {
+        let reporter = reporters[1].1      // .userInitiated: the cheaper QoS
+        guard let baseline = await reporter.capture() else {
+            emit("\n✗ baseline capture failed\n")
+            return
+        }
+        emit(header("baseline", baseline))
+
+        for step in 1...samples {
+            try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            guard let now = await reporter.capture() else { continue }
+
+            var out = header("t+\(Int(Double(step) * seconds))s", now)
+            if let diff = try? MemoryDumpDiff.between(baseline, now) {
+                out += diff.formattedReport(topN: 8)
+            }
+            emit(out)
+        }
+        emit("\n████ END ████\n")
+    }
+
+    private static func header(_ label: String, _ dump: MemoryDump) -> String {
+        var out = "\n████ \(label) ████\n"
+        out += "  footprint \(dump.footprint.physFootprintBytes.mi_reportBytes)"
+        if let heap = dump.heap {
+            out += " · heap \(heap.totalBytes.mi_reportBytes)"
+            let share = Double(heap.totalBytes) / Double(max(dump.footprint.physFootprintBytes, 1))
+            out += String(format: " (%.0f%% of footprint)", share * 100)
+        }
+        if let gpu = dump.footprint.gpuAllocatedBytes {
+            out += " · GPU \(gpu.mi_reportBytes)"
+        }
+        return out + "\n"
     }
 
     /// Several samples per priority. The first of each pays for the initial
